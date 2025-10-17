@@ -4,8 +4,10 @@ ENV BACKEND_URL=$BACKEND_URL
 WORKDIR /app
 COPY package*.json ./
 COPY public/* ./public/
+RUN npm install -D tailwindcss postcss autoprefixer
 RUN npm install
 COPY . .
+RUN npx tailwindcss init -p
 RUN npm run build
 
 FROM nginx:alpine

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
+import './index.css';
 
 const API_URL = process.env.BACKEND_URL || 'http://localhost:8080';
 
