@@ -1,0 +1,52 @@
+image:
+  repository: todoapp:latest
+  # tag is taken from Chart.appVersion if not specified
+  pullPolicy: Never #IfNotPresent
+
+service:
+  type: "ClusterIP"
+  port: 8080
+  #annotations:
+  #service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
+
+ingress:
+  enabled: true
+  host: todoapp.local
+  port: 8080
+  annotations:
+    className: ""
+    #kubernetes.io/ingress.class: nginx
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "todoapp.local"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: "todoapp.local"
+                port:
+                  number: 8080
+
+persistence:
+  enabled: true
+  # Use default storageClass or specify custom one
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 1G # update for your needs
+  # Specify mount paths for Nexus data
+  mountPath: /data
+
+todoapp:
+  listenPort: "8080"
+  storage: "/data/todoapp.db"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "2Gi"
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
