@@ -20,10 +20,24 @@ export default function App() {
     const fetchTodos = async () => {
         try {
             const res = await fetch(`${API_URL}/todos`);
-            const data = await res.json();
+            if (!res.ok) {
+                console.error('fetchTodos: bad response', res.status);
+                setTodos([]);
+                return;
+            }
+            const ct = (res.headers.get('content-type') || '').toLowerCase();
+            let data = [];
+            if (ct.includes('application/json')) {
+                data = await res.json();
+                if (!Array.isArray(data)) data = [];
+            } else {
+                // non-json -> fallback to empty list
+                data = [];
+            }
             setTodos(data);
         } catch (e) {
             console.error('Error fetching todos', e);
+            setTodos([]);
         }
     };
 
@@ -48,8 +62,14 @@ export default function App() {
     };
 
     const deleteTodo = async (id) => {
-        await fetch(`${API_URL}/todos/${id}`, { method: 'DELETE' });
-        fetchTodos();
+        try {
+            const res = await fetch(`${API_URL}/todos/${id}`, { method: 'DELETE' });
+            if (!res.ok) console.error('deleteTodo failed', res.status);
+        } catch (e) {
+            console.error('deleteTodo error', e);
+        } finally {
+            await fetchTodos();
+        }
     };
 
     return (
@@ -72,7 +92,7 @@ export default function App() {
                 </div>
 
                 <ul>
-                    {todos.map((t) => (
+                    {(Array.isArray(todos) ? todos : []).map((t) => (
                         <li key={t.id} className="flex justify-between items-center py-2 border-b border-gray-200">
                             <span
                                 onClick={() => toggleTodo(t.id, t.done)}
