@@ -50,3 +50,10 @@ todoapp:
     limits:
       cpu: "2000m"
       memory: "4Gi"
+
+frontend:
+  enabled: true
+  image:
+    repository: todofrontend
+    tag: latest
+  apiUrl: "http://todoapp:8080"
