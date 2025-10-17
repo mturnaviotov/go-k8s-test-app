@@ -168,6 +168,7 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err.Error())
 		return
 	}
+	log.Printf("Todo created: %+v", created)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(created)
@@ -229,6 +230,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request, id uint64) {
 		fmt.Fprint(w, err.Error())
 		return
 	}
+	log.Printf("Todo updated: %+v", updated)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(updated)
 }
@@ -247,5 +249,6 @@ func deleteTodo(w http.ResponseWriter, id uint64) {
 		fmt.Fprint(w, err.Error())
 		return
 	}
+	log.Printf("Todo deleted: %d", id)
 	w.WriteHeader(http.StatusNoContent)
 }

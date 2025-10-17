@@ -40,7 +40,7 @@ func setupTestDB(t *testing.T) *bbolt.DB {
 
 // --- Health Check Test ---
 func TestHealthHandler(t *testing.T) {
-	db = setupTestDB(t) // <- дуже важливо, db тепер не nil і bucket існує
+	db = setupTestDB(t)
 
 	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
 	w := httptest.NewRecorder()
@@ -60,7 +60,7 @@ func TestHealthHandler(t *testing.T) {
 
 // --- Basic CRUD Smoke Test ---
 func TestTodoCRUD(t *testing.T) {
-	db = setupTestDB(t) // глобальна db для handler-ів
+	db = setupTestDB(t)
 
 	// Create Todo
 	reqBody := strings.NewReader(`{"text":"test todo"}`)
