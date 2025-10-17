@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom/client';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API_URL = process.env.BACKEND_URL || 'http://localhost:8080';
 
 export default function App() {
     const [todos, setTodos] = useState([]);
@@ -86,4 +87,17 @@ export default function App() {
             </div>
         </div>
     );
+}
+
+// Mount app to #root
+if (typeof document !== 'undefined') {
+    const el = document.getElementById('root');
+    if (el) {
+        const root = ReactDOM.createRoot(el);
+        root.render(
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
+        );
+    }
 }

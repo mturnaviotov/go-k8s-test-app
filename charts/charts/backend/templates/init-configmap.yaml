@@ -19,7 +19,7 @@ data:
       echo "Waiting for {{ .Release.Name }} to be ready..."
       sleep 10
     done
-    echo =-=-=-=-=-=-=-= Allow anonymous access for pulling =-=-=-=-=-=-=-=
+    echo =-=-=-=-=-=-=-= Create first Todo =-=-=-=-=-=-=-=
     curl -X POST 'http://{{ .Release.Name }}:{{ .Values.service.port }}/todos' \
       -H 'accept: application/json' -H 'Content-Type: application/json' \
       -d '{"text":"First test todo" }'

@@ -1,5 +1,5 @@
 image:
-  repository: todoapp:latest
+  repository: todobackend:latest
   # tag is taken from Chart.appVersion if not specified
   pullPolicy: Never #IfNotPresent
 
@@ -11,7 +11,7 @@ service:
 
 ingress:
   enabled: true
-  host: todoapp.local
+  host: todobackend
   port: 8080
   annotations:
     className: ""
@@ -20,14 +20,14 @@ ingress:
 spec:
   ingressClassName: nginx
   rules:
-    - host: "todoapp.local"
+    - host: "todobackend"
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: "todoapp.local"
+                name: "todobackend"
                 port:
                   number: 8080
 
@@ -50,10 +50,3 @@ todoapp:
     limits:
       cpu: "2000m"
       memory: "4Gi"
-
-frontend:
-  enabled: true
-  image:
-    repository: todofrontend
-    tag: latest
-  apiUrl: "http://todoapp:8080"

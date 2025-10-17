@@ -1,0 +1,10 @@
+image:
+  repository: todofrontend
+  pullPolicy: Never
+  tag: latest
+
+service:
+  port: 80
+
+env:
+  BACKEND_URL: "http://localhost:8081"

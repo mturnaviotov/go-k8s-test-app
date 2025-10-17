@@ -1,0 +1,18 @@
+backend:
+  image:
+    repository: todobackend
+    tag: latest
+  service:
+    port: 8080
+  env:
+    STORAGE: /data/todo.db
+    LISTEN_PORT: "8080"
+
+frontend:
+  image:
+    repository: todofrontend
+    tag: latest
+  service:
+    port: 80
+  env:
+    BACKEND_URL: "http://localhost:8081"

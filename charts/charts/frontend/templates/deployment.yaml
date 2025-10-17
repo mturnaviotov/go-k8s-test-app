@@ -15,12 +15,11 @@ spec:
         app: {{ include "frontend.name" . }}
     spec:
       containers:
-        - name: frontend
-          image: todofront:latest
+        - name: todofrontend
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ##"{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
-            - containerPort: 80
+            - containerPort: {{ .Values.service.port }}
           env:
-            - name: REACT_APP_API_URL
-              value: {{ .Values.apiUrl | quote }}
+            - name: BACKEND_URL
+              value: "{{ .Values.env.BACKEND_URL }}"

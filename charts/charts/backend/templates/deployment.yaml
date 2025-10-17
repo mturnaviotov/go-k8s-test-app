@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ .Release.Name }}-backend
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -35,8 +35,8 @@ spec:
       #securityContext:
       #  fsGroup: 200
       containers:
-        - name: todoapp
-          image: todoapp:latest #"{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+        - name: todobackend
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.todoapp.listenPort | default "8080" }}

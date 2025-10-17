@@ -34,7 +34,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: todoapp
+                name: todobackend
                 port: 
                   number: {{ .Values.ingress.port }}
 {{- end }}

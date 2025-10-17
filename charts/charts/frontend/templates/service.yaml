@@ -3,9 +3,9 @@ kind: Service
 metadata:
   name: {{ include "frontend.fullname" . }}
 spec:
-  type: {{ .Values.service.type }}
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: 80
+  type: ClusterIP
   selector:
     app: {{ include "frontend.name" . }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}

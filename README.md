@@ -25,7 +25,7 @@ go build -o bin/todoapp ./src
 
 2. Build the container image
 ```bash
-docker build -t todoapp:0.1.0 .
+docker buildx build -t todofrontend . --build-arg BACKEND_URL=http://localhost:8081 
 # or tag & push to registry
 docker tag todoapp:0.1.0 <registry>/myapp:0.1.0
 docker push <registry>/myapp:0.1.0
@@ -33,7 +33,7 @@ docker push <registry>/myapp:0.1.0
 
 3. Install with Helm
 ```bash
-helm install todoapp ./charts/todoapp \
+helm install todoapp ./charts \
     --namespace todoapp --create-namespace \
     --set image.repository=<registry>/myapp,image.tag=0.1.0
 ```

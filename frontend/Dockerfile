@@ -1,10 +1,11 @@
 FROM node:22-alpine AS build
+ARG BACKEND_URL
+ENV BACKEND_URL=$BACKEND_URL
 WORKDIR /app
 COPY package*.json ./
+COPY public/* ./public/
 RUN npm install
 COPY . .
-ARG REACT_APP_API_URL
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
 RUN npm run build
 
 FROM nginx:alpine
