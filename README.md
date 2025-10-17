@@ -3,9 +3,9 @@
 A minimal Go web app packaged with a Helm chart for testing Kubernetes/Helm workflows. Useful as a starter for CI, local Kubernetes development (kind/minikube), and Helm chart experimentation.
 
 ## Repo layout
-- src/.             — main Go application
-- charts/todoapp/     — Helm chart (Chart.yaml, templates/, values.yaml)
-- Dockerfile
+- backend/    — main Go application
+- charts/     — Helm chart with sub-charts
+- frontend.   - basic ui
 - README.md
 
 ## Prerequisites
@@ -64,7 +64,7 @@ curl -v -H "Content-Type: application/json" -X DELETE  http://localhost:8080/tod
 ```
 
 ## Helm tips
-- Update values in `charts/myapp/values.yaml` or pass overrides with `--set` or `-f`.
+- Update values in `charts/todoapp/values.yaml` or pass overrides with `--set` or `-f`.
 - Upgrade:
 ```bash
 helm upgrade myapp ./charts/myapp -n myapp -f custom-values.yaml
@@ -85,7 +85,7 @@ go run ./bin/myapp
 ```bash
 go test ./...
 # optionally add go vet/gofmt/golint as needed
-helm lint charts/myapp
+helm lint charts/todoapp
 ```
 
 ## Configuration
