@@ -11,7 +11,15 @@ service:
 
 ingress:
   enabled: true
-  host: todobackend
+  host: todobackend # ...existing code...
+  backend:
+    service:
+      port: 8080
+    image:
+      repository: todobackend
+      tag: "latest"
+    # persistence:
+    #   enabled: true
   port: 8080
   annotations:
     className: ""

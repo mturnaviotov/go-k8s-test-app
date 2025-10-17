@@ -6,5 +6,12 @@ image:
 service:
   port: 80
 
-env:
-  BACKEND_URL: "http://localhost:8081"
+backend:
+  service:
+    port: 8080
+  image:
+    repository: todobackend
+    tag: "latest"
+  # Додаткові overrides якщо потрібно:
+  # persistence:
+  #   enabled: true
