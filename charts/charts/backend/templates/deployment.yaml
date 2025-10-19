@@ -23,7 +23,7 @@ spec:
         {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-data
+            claimName: {{ include "backend.fullname" . }}
         {{- else }}
         - name: data
           emptyDir: {}

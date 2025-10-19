@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
-const API_URL = process.env.BACKEND_URL || 'http://localhost:8080';
+const API_URL = ''
+//process.env.BACKEND_URL || 'http://localhost:8080'; -> replace at build time with actual backend URL if you needed
 
 export default function App() {
     const [todos, setTodos] = useState([]);

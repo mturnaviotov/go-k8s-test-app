@@ -12,6 +12,15 @@ backend:
   image:
     repository: todobackend
     tag: "latest"
-  # Додаткові overrides якщо потрібно:
-  # persistence:
-  #   enabled: true
+  persistence:
+    enabled: true
+
+#frontend:
+#  env:
+#    BACKEND_URL: "http://todo:8080"
+
+#commonBackendUrl: &backendUrl "http://todo:8080"
+
+#frontend:
+#  env:
+#    BACKEND_URL: *backendUrl

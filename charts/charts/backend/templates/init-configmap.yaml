@@ -15,12 +15,16 @@ data:
   init.sh: |
     #!/bin/sh
     # Wait for todoapp to be ready
-    until curl -sf http://{{ .Release.Name }}:{{ .Values.service.port }}/healthz; do
+    {{- $svcName := default (printf "%s" .Release.Name) .Values.service.name }}
+    {{- $svcNS := default .Release.Namespace .Values.service.namespace }}
+    {{- $svcPort := int (default 8080 .Values.service.port) }}
+    {{- $svcFQDN := printf "%s.%s.svc.cluster.local:%d" $svcName $svcNS $svcPort }}
+    until curl -sf http://{{ $svcFQDN }}/healthz; do
       echo "Waiting for {{ .Release.Name }} to be ready..."
       sleep 10
     done
     echo =-=-=-=-=-=-=-= Create first Todo =-=-=-=-=-=-=-=
-    curl -X POST 'http://{{ .Release.Name }}:{{ .Values.service.port }}/todos' \
+    curl -X POST 'http://{{ $svcFQDN }}/todos' \
       -H 'accept: application/json' -H 'Content-Type: application/json' \
       -d '{"text":"First test todo" }'
     echo "Initialization script completed."

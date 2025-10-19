@@ -11,15 +11,12 @@ service:
 
 ingress:
   enabled: true
-  host: todobackend # ...existing code...
   backend:
     service:
       port: 8080
     image:
       repository: todobackend
       tag: "latest"
-    # persistence:
-    #   enabled: true
   port: 8080
   annotations:
     className: ""
@@ -28,25 +25,23 @@ ingress:
 spec:
   ingressClassName: nginx
   rules:
-    - host: "todobackend"
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: "todobackend"
-                port:
-                  number: 8080
+  - host: "todobackend"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: "todobackend"
+            port:
+              number: 8080
 
 persistence:
   enabled: true
-  # Use default storageClass or specify custom one
-  storageClass: ""
+  storageClass: "" #"local-path"
   accessMode: ReadWriteOnce
-  size: 1G # update for your needs
-  # Specify mount paths for Nexus data
-  mountPath: /data
+  size: 1G
+  existingClaim: ""
 
 todoapp:
   listenPort: "8080"
