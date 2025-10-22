@@ -7,32 +7,32 @@ service:
   type: "ClusterIP"
   port: 8080
   #annotations:
-  #service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
 
 ingress:
   enabled: true
-  backend:
-    service:
-      port: 8080
-    image:
-      repository: todobackend
-      tag: "latest"
+  className: traefik
+  host: todo.k8s.orb.local
   port: 8080
+  serviceName: todo
+
   annotations:
-    className: ""
-    #kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: "traefik"
+    traefik.ingress.kubernetes.io/router.entrypoints: "web"
+    #traefik.ingress.kubernetes.io/router.middlewares: "default-https-redirect@kubernetescrd"
+    #traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.priority: "10"
 
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
-  - host: "todobackend"
+  - host: todo.k8s.orb.local
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: "todobackend"
+            name: "todoapp"
             port:
               number: 8080
 
