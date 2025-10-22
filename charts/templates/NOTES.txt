@@ -1,0 +1,37 @@
+{{- /*
+Basic NOTES for frontend and backend charts.
+Place this file at templates/NOTES.txt in your chart.
+*/ -}}
+
+Release: {{ .Release.Name }}
+Namespace: {{ .Release.Namespace }}
+
+{{- if .Values.frontend.enabled }}
+Frontend:
+    - List service:
+        kubectl get svc -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=frontend -n {{ .Release.Namespace }}
+    - Port-forward to access locally (example):
+        kubectl port-forward svc/$(kubectl get svc -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=frontend -n {{ .Release.Namespace }} -o jsonpath='{.items[0].metadata.name}') 8080:80 -n {{ .Release.Namespace }}
+    - If an Ingress was created, get the host:
+        kubectl get ingress -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=frontend -n {{ .Release.Namespace }} -o jsonpath='{.items[0].spec.rules[0].host}'
+{{- else }}
+Frontend: disabled
+{{- end }}
+
+{{- if .Values.backend.enabled }}
+Backend:
+    - List service:
+        kubectl get svc -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=backend -n {{ .Release.Namespace }}
+    - Port-forward to access locally (example):
+        kubectl port-forward svc/$(kubectl get svc -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=backend -n {{ .Release.Namespace }} -o jsonpath='{.items[0].metadata.name}') 8081:80 -n {{ .Release.Namespace }}
+    - Quick pod exec example to hit a local endpoint from inside the cluster:
+        kubectl exec -it $(kubectl get pods -l app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=backend -n {{ .Release.Namespace }} -o jsonpath='{.items[0].metadata.name}') -n {{ .Release.Namespace }} -- curl -fsS http://localhost:8081/health || echo "no health endpoint"
+{{- else }}
+Backend: disabled
+{{- end }}
+
+Common:
+    - Check Helm release:
+            helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
+    - Show all resources created by this release:
+            kubectl get all -l app.kubernetes.io/instance={{ .Release.Name }} -n {{ .Release.Namespace }}
