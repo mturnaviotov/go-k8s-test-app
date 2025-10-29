@@ -4,19 +4,21 @@ image:
   pullPolicy: Never #IfNotPresent
 
 service:
-  type: "ClusterIP"
+  type: "LoadBalancer"
   port: 8080
-  #annotations:
 
+hostName: &hostname "todo-backend.zone.internal"
 ingress:
   enabled: true
   className: traefik
-  host: todo.k8s.orb.local
+  host: *hostname
   port: 8080
   serviceName: todo
 
   annotations:
-    kubernetes.io/ingress.class: "traefik"
+    kubernetes.io/ingress.className: traefik
+    cert-manager.io/cluster-issuer: local-ca
+    external-dns.alpha.kubernetes.io/hostname: *hostname
     traefik.ingress.kubernetes.io/router.entrypoints: "web"
     #traefik.ingress.kubernetes.io/router.middlewares: "default-https-redirect@kubernetescrd"
     #traefik.ingress.kubernetes.io/router.tls: "true"
@@ -25,14 +27,14 @@ ingress:
 spec:
   ingressClassName: traefik
   rules:
-  - host: todo.k8s.orb.local
+  - host: *hostname
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: "todoapp"
+            name: "todo"
             port:
               number: 8080
 

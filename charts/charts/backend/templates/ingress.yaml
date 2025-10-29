@@ -34,7 +34,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ .Values.ingress.serviceName | default "todo-backend" }}
+                name: {{ .Values.ingress.serviceName | default "todo" }}
                 port:
                   number: {{ .Values.ingress.port | default 80 }}
 {{- end }}
