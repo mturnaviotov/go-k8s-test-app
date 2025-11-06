@@ -18,10 +18,10 @@ backend:
 resources:
   requests:
     cpu: "100m"
-    memory: "1Gi"
+    memory: "0.25Gi"
   limits:
     cpu: "200m"
-    memory: "1.5Gi"
+    memory: "0.5Gi"
 
 #frontend:
 #  env:
