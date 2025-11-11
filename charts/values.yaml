@@ -3,7 +3,7 @@ backend:
   service:
     port: 8080
   image:
-    repository: todobackend
+    repository: foxmuldercp/go-todo-backend
     tag: "latest"
   persistence:
     enabled: true
@@ -14,7 +14,7 @@ backend:
 frontend:
   enabled: true
   image:
-    repository: todofrontend
+    repository: foxmuldercp/go-todo-frontend
     tag: latest
   service:
     port: 80

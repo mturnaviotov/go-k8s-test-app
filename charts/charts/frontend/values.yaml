@@ -1,34 +1,15 @@
 image:
-  repository: todofrontend
+  repository: foxmuldercp/go-todo-frontend
   pullPolicy: Never
   tag: latest
 
 service:
   port: 80
 
-backend:
-  service:
-    port: 8080
-  image:
-    repository: todobackend
-    tag: "latest"
-  persistence:
-    enabled: true
-
 resources:
   requests:
     cpu: "100m"
-    memory: "0.25Gi"
+    memory: "0.1Gi"
   limits:
     cpu: "200m"
-    memory: "0.5Gi"
-
-#frontend:
-#  env:
-#    BACKEND_URL: "http://todo:8080"
-
-#commonBackendUrl: &backendUrl "http://todo:8080"
-
-#frontend:
-#  env:
-#    BACKEND_URL: *backendUrl
+    memory: "0.2Gi"

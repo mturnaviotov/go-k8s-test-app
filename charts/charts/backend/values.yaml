@@ -1,5 +1,5 @@
 image:
-  repository: todobackend:latest
+  repository: foxmuldercp/go-todo-backend
   # tag is taken from Chart.appVersion if not specified
   pullPolicy: Never #IfNotPresent
 
