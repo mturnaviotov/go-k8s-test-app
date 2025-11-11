@@ -1,6 +1,6 @@
 image:
   repository: foxmuldercp/go-todo-frontend
-  pullPolicy: Never
+  pullPolicy: IfNotPresent
   tag: latest
 
 service:
