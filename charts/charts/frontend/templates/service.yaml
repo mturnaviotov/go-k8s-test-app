@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "frontend.fullname" . }}
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: {{ include "frontend.name" . }}
   ports:
