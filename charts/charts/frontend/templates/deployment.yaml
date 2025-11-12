@@ -15,7 +15,7 @@ spec:
         app: {{ include "frontend.name" . }}
     spec:
       containers:
-        - name: todofrontend
+        - name: todo-frontend
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:

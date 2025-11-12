@@ -1,3 +1,23 @@
+hostName: &hostname "todo-frontend.zone.internal"
+
+ingress:
+  enabled: true
+  className: traefik
+  host: *hostname
+  serviceName: todo-frontend
+  tls:
+  - secretName: todo-frontend-tls
+    hosts:
+    - *hostname
+  annotations:
+    kubernetes.io/ingress.className: traefik
+    cert-manager.io/cluster-issuer: local-ca
+    external-dns.alpha.kubernetes.io/hostname: *hostname
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    #traefik.ingress.kubernetes.io/router.middlewares: "default-https-redirect@kubernetescrd"
+    #traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.priority: "10"
+
 image:
   repository: foxmuldercp/go-todo-frontend
   pullPolicy: IfNotPresent
@@ -8,6 +28,7 @@ service:
 
 backend:
   service:
+    host: todo-backend.todo.svc.cluster.local
     port: 8080
 
 resources:

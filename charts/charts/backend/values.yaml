@@ -1,10 +1,12 @@
 image:
   repository: foxmuldercp/go-todo-backend
+  tag: latest
   # tag is taken from Chart.appVersion if not specified
   pullPolicy: IfNotPresent
 
 service:
   type: "LoadBalancer"
+  name: "todo-backend"
   port: 8080
 
 hostName: &hostname "todo-backend.zone.internal"
@@ -13,19 +15,22 @@ ingress:
   className: traefik
   host: *hostname
   port: 8080
-  serviceName: todo
-
+  serviceName: todo-backend
   annotations:
     kubernetes.io/ingress.className: traefik
     cert-manager.io/cluster-issuer: local-ca
     external-dns.alpha.kubernetes.io/hostname: *hostname
-    traefik.ingress.kubernetes.io/router.entrypoints: "web"
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
     #traefik.ingress.kubernetes.io/router.middlewares: "default-https-redirect@kubernetescrd"
     #traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.priority: "10"
 
 spec:
   ingressClassName: traefik
+  tls:
+  - secretName: todo-backend-tls
+    hosts:
+    - *hostname
   rules:
   - host: *hostname
     http:
@@ -34,7 +39,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: "todo"
+            name: "todo-backend"
             port:
               number: 8080
 
@@ -50,8 +55,8 @@ todoapp:
   storage: "/data/todoapp.db"
   resources:
     requests:
-      cpu: "50m"
-      memory: "0.25Gi"
-    limits:
       cpu: "100m"
+      memory: "0.2Gi"
+    limits:
+      cpu: "200m"
       memory: "0.5Gi"

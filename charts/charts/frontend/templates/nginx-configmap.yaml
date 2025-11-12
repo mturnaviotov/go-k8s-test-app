@@ -4,10 +4,10 @@ metadata:
   name: {{ include "frontend.fullname" . }}-nginx-config
 data:
   default.conf: |
-    {{- $svcName := default (printf "%s" .Release.Name) }}
+    {{- $svcName := default (printf "%s" .Values.backend.service.host ) }}
     {{- $svcNS := default .Release.Namespace }}
     {{- $svcPort := int (default 8080 .Values.backend.service.port) }}
-    {{- $svcFQDN := printf "%s.%s.svc.cluster.local:%d" $svcName $svcNS $svcPort }}
+    {{- $svcFQDN := printf "%s:%d" $svcName $svcPort }}
     upstream backend {
       server {{ $svcFQDN }};
     }

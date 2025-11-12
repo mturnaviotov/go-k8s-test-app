@@ -35,7 +35,7 @@ spec:
       #securityContext:
       #  fsGroup: 200
       containers:
-        - name: todobackend
+        - name: todo-backend
           image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:

@@ -41,7 +41,7 @@ func main() {
 	var err error
 	db, err = bolt.Open(storage, 0o600, nil)
 	if err != nil {
-		log.Fatalf("open db: %v", err)
+		log.Fatalf("{\"error\":\"open db: %v\"}", err)
 	}
 	defer db.Close()
 
@@ -51,7 +51,7 @@ func main() {
 		return err
 	})
 	if err != nil {
-		log.Fatalf("create bucket: %v", err)
+		log.Fatalf("{\"error\":\"create bucket: %v\"}", err)
 	}
 
 	http.HandleFunc("/healthz", healthHandler)
@@ -59,7 +59,7 @@ func main() {
 	http.HandleFunc("/todos/", todoHandler)
 
 	addr := ":" + listenPort
-	log.Printf("listening on %s, storage=%s", addr, storage)
+	log.Printf("{\"listening on\":\"%s\", \"storage\":\"%s\"}", addr, storage)
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
 
@@ -70,7 +70,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "DB not accessible")
+		fmt.Fprint(w, "{\"error\":\"DB not accessible\"}")
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -83,9 +83,9 @@ func idToBytes(id uint64) []byte {
 	return b
 }
 
-func bytesToUint64(b []byte) uint64 {
-	return binary.BigEndian.Uint64(b)
-}
+// func bytesToUint64(b []byte) uint64 {
+//	return binary.BigEndian.Uint64(b)
+// }
 
 func todosHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -103,7 +103,7 @@ func todoHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "invalid id")
+		fmt.Fprint(w, "{\"error\":\"invalid id\"}")
 		return
 	}
 	switch r.Method {
@@ -149,7 +149,7 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "invalid body")
+		fmt.Fprint(w, "{\"error\":\"invalid body\"}")
 		return
 	}
 	var created Todo
@@ -168,7 +168,7 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err.Error())
 		return
 	}
-	log.Printf("Todo created: %+v", created)
+	log.Printf("{\"Todo created\":\"%+v\"}", created)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(created)
@@ -180,13 +180,13 @@ func getTodo(w http.ResponseWriter, id uint64) {
 		b := tx.Bucket([]byte(bucketName))
 		v := b.Get(idToBytes(id))
 		if v == nil {
-			return fmt.Errorf("not found")
+			return fmt.Errorf("{\"error\":\"not found\"}")
 		}
 		return json.Unmarshal(v, &t)
 	})
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, "not found")
+		fmt.Fprint(w, "{\"error\":\"not found\"}")
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -200,7 +200,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request, id uint64) {
 	}
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "invalid body")
+		fmt.Fprint(w, "{\"error\":\"invalid body\"}")
 		return
 	}
 	var updated Todo
@@ -208,7 +208,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request, id uint64) {
 		b := tx.Bucket([]byte(bucketName))
 		v := b.Get(idToBytes(id))
 		if v == nil {
-			return fmt.Errorf("not found")
+			return fmt.Errorf("{\"error\":\"not found\"}")
 		}
 		if err := json.Unmarshal(v, &updated); err != nil {
 			return err
@@ -230,7 +230,8 @@ func updateTodo(w http.ResponseWriter, r *http.Request, id uint64) {
 		fmt.Fprint(w, err.Error())
 		return
 	}
-	log.Printf("Todo updated: %+v", updated)
+	log.Printf("{\"Todo updated\":\"%+v\"}", updated)
+
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(updated)
 }
@@ -240,7 +241,7 @@ func deleteTodo(w http.ResponseWriter, id uint64) {
 		b := tx.Bucket([]byte(bucketName))
 		v := b.Get(idToBytes(id))
 		if v == nil {
-			return fmt.Errorf("not found")
+			return fmt.Errorf("{\"error\":\"not found\"}")
 		}
 		return b.Delete(idToBytes(id))
 	})
@@ -249,6 +250,6 @@ func deleteTodo(w http.ResponseWriter, id uint64) {
 		fmt.Fprint(w, err.Error())
 		return
 	}
-	log.Printf("Todo deleted: %d", id)
+	log.Printf("{\"Todo deleted\":\"%d\"}", id)
 	w.WriteHeader(http.StatusNoContent)
 }
