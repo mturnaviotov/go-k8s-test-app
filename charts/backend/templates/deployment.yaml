@@ -11,7 +11,8 @@ metadata:
     app.kubernetes.io/component: {{ .Release.Name }}-backend
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   annotations:
-    deployment.kubernetes.io/revision: "1"
+    alloy.io/scrape: "true"
+    loki.io/logs: "true"
 spec:
   replicas: 1
   selector:
@@ -21,6 +22,16 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}
+        app.kubernetes.io/app: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ .Release.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/part-of: {{ .Chart.Name }}
+        app.kubernetes.io/component: {{ .Release.Name }}-backend
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+      annotations:
+        alloy.io/scrape: "true"
+        loki.io/logs: "true"
     spec:
       volumes:
         {{- if .Values.persistence.enabled }}

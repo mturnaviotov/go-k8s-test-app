@@ -7,8 +7,8 @@ appVersion: "0.0.2"
 
 dependencies:
 - name: todo-backend
-  version: 0.0.1
-  repository: "file://charts/backend"
+  version: 0.0.2
+  repository: "file://backend"
 - name: todo-frontend
-  version: 0.0.1
-  repository: "file://charts/frontend"
+  version: 0.0.2
+  repository: "file://frontend"
