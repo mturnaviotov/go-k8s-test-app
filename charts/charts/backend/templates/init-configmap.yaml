@@ -3,9 +3,12 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-init-script
   labels:
+    app.kubernetes.io/app: {{ .Release.Name }}
     app.kubernetes.io/name: {{ .Release.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/part-of: {{ .Chart.Name }}
+    app.kubernetes.io/component: {{ .Release.Name }}-backend
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   annotations:
     "helm.sh/hook": "pre-install,pre-upgrade"
@@ -19,12 +22,12 @@ data:
     {{- $svcNS := default .Release.Namespace .Values.service.namespace }}
     {{- $svcPort := int (default 8080 .Values.service.port) }}
     {{- $svcFQDN := printf "%s.%s.svc.cluster.local:%d" $svcName $svcNS $svcPort }}
-    until curl -sf http://{{ $svcFQDN }}/healthz; do
-      echo "Waiting for {{ .Release.Name }} to be ready..."
-      sleep 10
+    until -s curl -sf http://{{ $svcFQDN }}/healthz; do
+      echo "{\"level\":\"info\", \"message\":\"Waiting for {{ .Release.Name }} to be ready\"}"
+      sleep 5
     done
-    echo =-=-=-=-=-=-=-= Create first Todo =-=-=-=-=-=-=-=
-    curl -X POST 'http://{{ $svcFQDN }}/todos' \
+    echo '{"level":"info", "message":"Created first todo"}'
+    curl -s -X POST 'http://{{ $svcFQDN }}/todos' \
       -H 'accept: application/json' -H 'Content-Type: application/json' \
       -d '{"text":"First test todo" }'
-    echo "Initialization script completed."
+    echo '{"level":"info", "message":"Init completed"}'

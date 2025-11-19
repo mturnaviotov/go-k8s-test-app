@@ -2,6 +2,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "frontend.fullname" . }}-nginx-config
+  labels:
+    app.kubernetes.io/app: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/part-of: {{ .Chart.Name }}
+    app.kubernetes.io/component: {{ .Release.Name }}-frontend
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+
 data:
   default.conf: |
     {{- $svcName := default (printf "%s" .Values.backend.service.host ) }}

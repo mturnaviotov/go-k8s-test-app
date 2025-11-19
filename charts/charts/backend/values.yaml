@@ -23,7 +23,7 @@ ingress:
     traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
     #traefik.ingress.kubernetes.io/router.middlewares: "default-https-redirect@kubernetescrd"
     #traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.priority: "10"
+    #traefik.ingress.kubernetes.io/router.priority: "10"
 
 spec:
   ingressClassName: traefik
