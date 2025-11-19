@@ -22,7 +22,7 @@ data:
     {{- $svcNS := default .Release.Namespace .Values.service.namespace }}
     {{- $svcPort := int (default 8080 .Values.service.port) }}
     {{- $svcFQDN := printf "%s.%s.svc.cluster.local:%d" $svcName $svcNS $svcPort }}
-    until -s curl -sf http://{{ $svcFQDN }}/healthz; do
+    until curl -sf http://{{ $svcFQDN }}/healthz; do
       echo "{\"level\":\"info\", \"message\":\"Waiting for {{ .Release.Name }} to be ready\"}"
       sleep 5
     done
