@@ -104,7 +104,7 @@ func todoHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		log.Printf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
-		fmt.Fprint(w, "{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
+		fmt.Fprint(w, "{\"level\":\"error\", \"message\":\"Todo not found\"}")
 		return
 	}
 	switch r.Method {
@@ -190,7 +190,7 @@ func getTodo(w http.ResponseWriter, id uint64) {
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		log.Printf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
-		fmt.Fprint(w, "{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
+		fmt.Printf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
