@@ -103,7 +103,8 @@ func todoHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "{\"level\":\"error\", \"message\":\"invalid id\"}")
+		log.Printf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
+		fmt.Fprint(w, "{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
 		return
 	}
 	switch r.Method {
@@ -149,6 +150,7 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		log.Printf("{\"level\":\"error\", \"message\":\"invalid body\"}")
 		fmt.Fprint(w, "{\"level\":\"error\", \"message\":\"invalid body\"}")
 		return
 	}
@@ -180,13 +182,15 @@ func getTodo(w http.ResponseWriter, id uint64) {
 		b := tx.Bucket([]byte(bucketName))
 		v := b.Get(idToBytes(id))
 		if v == nil {
-			return fmt.Errorf("{\"level\":\"error\", \"message\":\"not found\"}")
+			log.Printf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
+			return fmt.Errorf("{\"level\":\"error\", \"message\":\"TTodo not found %d\"}", id)
 		}
 		return json.Unmarshal(v, &t)
 	})
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, "{\"level\":\"error\", \"message\":\"not found\"}")
+		log.Printf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
+		fmt.Fprint(w, "{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -200,6 +204,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request, id uint64) {
 	}
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		log.Printf("{\"level\":\"error\", \"message\":\"invalid body\"}")
 		fmt.Fprint(w, "{\"level\":\"error\", \"message\":\"invalid body\"}")
 		return
 	}
@@ -208,7 +213,8 @@ func updateTodo(w http.ResponseWriter, r *http.Request, id uint64) {
 		b := tx.Bucket([]byte(bucketName))
 		v := b.Get(idToBytes(id))
 		if v == nil {
-			return fmt.Errorf("{\"level\":\"error\", \"message\":\"not found\"}")
+			log.Printf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
+			return fmt.Errorf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
 		}
 		if err := json.Unmarshal(v, &updated); err != nil {
 			return err
@@ -225,13 +231,14 @@ func updateTodo(w http.ResponseWriter, r *http.Request, id uint64) {
 		}
 		return b.Put(idToBytes(id), buf)
 	})
+
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprint(w, err.Error())
 		return
 	}
-	log.Printf("{\"level\":\"info\", \"Todo updated\":\"%+v\"}", updated)
 
+	log.Printf("{\"level\":\"info\", \"Todo updated\":\"%+v\"}", updated)
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(updated)
 }
@@ -241,7 +248,8 @@ func deleteTodo(w http.ResponseWriter, id uint64) {
 		b := tx.Bucket([]byte(bucketName))
 		v := b.Get(idToBytes(id))
 		if v == nil {
-			return fmt.Errorf("{\"level\":\"error\", \"message\":\"not found\"}")
+			log.Printf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
+			return fmt.Errorf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
 		}
 		return b.Delete(idToBytes(id))
 	})
