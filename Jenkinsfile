@@ -41,7 +41,7 @@ spec:
                 checkout scmGit(branches: [[name: '*']],
                     extensions: [], userRemoteConfigs:
                     [[url: 'https://github.com/mturnaviotov/go-k8s-test-app.git']])
-                sh 'apk add --no-cache docker'
+                sh 'apk add --no-cache docker git'
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'regpass', usernameVariable: 'reguser')]) {
                     sh 'docker login -u $reguser -p $regpass'
                 }
