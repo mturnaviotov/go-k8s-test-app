@@ -57,6 +57,7 @@ func main() {
 	http.HandleFunc("/healthz", healthHandler)
 	http.HandleFunc("/todos", todosHandler)
 	http.HandleFunc("/todos/", todoHandler)
+	http.HandleFunc("/metrics", metrics)
 
 	addr := ":" + listenPort
 	log.Printf("{\"level\":\"info\", \"listening on\":\"%s\", \"storage\":\"%s\"}", addr, storage)
@@ -73,6 +74,8 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "{\"level\":\"error\", \"message\":\"DB not accessible\"}")
 		return
 	}
+	AppMetrics.IncRequests()
+	AppMetrics.IncHealthChecks()
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, "OK")
 }
@@ -120,6 +123,7 @@ func todoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func listTodos(w http.ResponseWriter) {
+	AppMetrics.IncRequests()
 	var out []Todo
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
@@ -140,11 +144,13 @@ func listTodos(w http.ResponseWriter) {
 		fmt.Fprint(w, err.Error())
 		return
 	}
+	AppMetrics.IncTodoListFetched()
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(out)
 }
 
 func createTodo(w http.ResponseWriter, r *http.Request) {
+	AppMetrics.IncRequests()
 	var in struct {
 		Text string `json:"text"`
 	}
@@ -171,17 +177,20 @@ func createTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("{\"level\":\"info\", \"Todo created\":\"%+v\"}", created)
+	AppMetrics.IncTodoCreated()
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(created)
 }
 
 func getTodo(w http.ResponseWriter, id uint64) {
+	AppMetrics.IncRequests()
 	var t Todo
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
 		v := b.Get(idToBytes(id))
 		if v == nil {
+			AppMetrics.IncTodoNotFound()
 			log.Printf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
 			return fmt.Errorf("{\"level\":\"error\", \"message\":\"TTodo not found %d\"}", id)
 		}
@@ -193,11 +202,13 @@ func getTodo(w http.ResponseWriter, id uint64) {
 		fmt.Printf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
 		return
 	}
+	AppMetrics.IncTodoUpdated()
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(t)
 }
 
 func updateTodo(w http.ResponseWriter, r *http.Request, id uint64) {
+	AppMetrics.IncRequests()
 	var in struct {
 		Text *string `json:"text"`
 		Done *bool   `json:"done"`
@@ -213,6 +224,7 @@ func updateTodo(w http.ResponseWriter, r *http.Request, id uint64) {
 		b := tx.Bucket([]byte(bucketName))
 		v := b.Get(idToBytes(id))
 		if v == nil {
+			AppMetrics.IncTodoNotFound()
 			log.Printf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
 			return fmt.Errorf("{\"level\":\"error\", \"message\":\"Todo not found %d\"}", id)
 		}
@@ -237,14 +249,16 @@ func updateTodo(w http.ResponseWriter, r *http.Request, id uint64) {
 		fmt.Fprint(w, err.Error())
 		return
 	}
-
 	log.Printf("{\"level\":\"info\", \"Todo updated\":\"%+v\"}", updated)
+	AppMetrics.IncTodoUpdated()
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(updated)
 }
 
 func deleteTodo(w http.ResponseWriter, id uint64) {
+	AppMetrics.IncRequests()
 	err := db.Update(func(tx *bolt.Tx) error {
+		AppMetrics.IncTodoNotFound()
 		b := tx.Bucket([]byte(bucketName))
 		v := b.Get(idToBytes(id))
 		if v == nil {
@@ -258,6 +272,13 @@ func deleteTodo(w http.ResponseWriter, id uint64) {
 		fmt.Fprint(w, err.Error())
 		return
 	}
+	AppMetrics.IncTodoDeleted()
 	log.Printf("{\"level\":\"info\", \"Todo deleted\":\"%d\"}", id)
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func metrics(w http.ResponseWriter, r *http.Request) {
+	AppMetrics.IncRequests()
+	w.Header().Set("Content-Type", "text/plain; version=0.0.4")
+	fmt.Fprint(w, AppMetrics.Render())
 }
