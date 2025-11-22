@@ -51,7 +51,11 @@ spec:
             parallel {
                 stage('Backend') {
                     steps {
-                        sh 'cd backend; docker buildx build --push -t foxmuldercp/go-todo-backend:latest .'
+                        sh '''
+                          cd backend
+                          tag=`git rev-parse --short HEAD`
+                          docker buildx build --push -t foxmuldercp/go-todo-backend:${tag} .
+                        '''
                     }
                     post {
                         always {
