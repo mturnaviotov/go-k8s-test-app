@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-backend
+  name: {{ include "backend.fullname" . }}
   labels:
     app.kubernetes.io/app: {{ .Release.Name }}
     app.kubernetes.io/name: {{ .Release.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/part-of: {{ .Chart.Name }}
-    app.kubernetes.io/component: {{ .Release.Name }}-backend
+    app.kubernetes.io/component: {{ include "backend.fullname" . }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   annotations:
     alloy.io/scrape: "true"
@@ -20,17 +20,17 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Release.Name }}
+      app: {{ include "backend.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}
+        app: {{ include "backend.fullname" . }}
         app.kubernetes.io/app: {{ .Release.Name }}
         app.kubernetes.io/name: {{ .Release.Name }}
         app.kubernetes.io/instance: {{ .Release.Name }}
         app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
         app.kubernetes.io/part-of: {{ .Chart.Name }}
-        app.kubernetes.io/component: {{ .Release.Name }}-backend
+        app.kubernetes.io/component: {{ include "backend.fullname" . }}
         app.kubernetes.io/managed-by: {{ .Release.Service }}
       annotations:
         alloy.io/scrape: "true"
@@ -55,19 +55,19 @@ spec:
       #securityContext:
       #  fsGroup: 200
       containers:
-        - name: todo-backend
+        - name: {{ include "backend.fullname" . }}
           image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.todoapp.listenPort | default "8080" }}
+            - containerPort: {{ .Values.service.listenPort | default "8080" }}
               name: http
           env:
             - name: listenPort
-              value: "{{ .Values.todoapp.listenPort | default "8080" }}"
+              value: "{{ .Values.service.listenPort | default "8080" }}"
             - name: storage
-              value: "{{ .Values.todoapp.storage | default "/data/todoapp.db" }}"
+              value: "{{ .Values.service.storage | default "/data/todoapp.db" }}"
           resources:
-            {{- toYaml .Values.todoapp.resources | nindent 12 }}
+            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: data
               mountPath: /data

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ .Release.Name }}-init-job"
+  name: "{{ include "backend.fullname" . }}-init-job"
   labels:
     app: {{ .Release.Name }}
     app.kubernetes.io/app: {{ .Release.Name }}
@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/part-of: {{ .Chart.Name }}
-    app.kubernetes.io/component: {{ .Release.Name }}-backend
+    app.kubernetes.io/component: {{ include "backend.fullname" . }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   annotations:
     "helm.sh/hook": "post-install,post-upgrade"
@@ -21,7 +21,7 @@ spec:
       volumes:
         - name: init-script-volume
           configMap:
-            name: {{ .Release.Name }}-init-script
+            name: "{{ include "backend.fullname" . }}-init-script"
             defaultMode: 0755
       containers:
         - name: init-job-container

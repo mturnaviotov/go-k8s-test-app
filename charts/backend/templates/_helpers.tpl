@@ -10,7 +10,3 @@
 {{- printf "%s-%s" .Release.Name (include "backend.name" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
-
-{{- define "backend.serviceName" -}}
-{{- include "backend.fullname" . -}}
-{{- end -}}

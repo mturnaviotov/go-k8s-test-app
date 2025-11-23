@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "frontend.fullname" . }}
   labels:
     app: {{ .Release.Name }}
     app.kubernetes.io/app: {{ .Release.Name }}
@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/part-of: {{ .Chart.Name }}
-    app.kubernetes.io/component: {{ .Release.Name }}-frontend
+    app.kubernetes.io/component: {{ include "frontend.fullname" . }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   {{- with .Values.ingress.annotations }}
   annotations:

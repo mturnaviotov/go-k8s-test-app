@@ -1,62 +1,38 @@
-image:
-  repository: foxmuldercp/go-todo-backend
-  tag: latest
-  # tag is taken from Chart.appVersion if not specified
-  pullPolicy: IfNotPresent
-
 service:
-  type: "LoadBalancer"
-  name: "todo-backend"
-  port: 8080
-
-hostName: &hostname "todo-backend.zone.internal"
-ingress:
   enabled: true
-  className: traefik
-  host: *hostname
+  type: ClusterIP
+  name: todo-backend
   port: 8080
-  serviceName: todo-backend
-  annotations:
-    kubernetes.io/ingress.className: traefik
-    cert-manager.io/cluster-issuer: local-ca
-    external-dns.alpha.kubernetes.io/hostname: *hostname
-    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-    #traefik.ingress.kubernetes.io/router.middlewares: "default-https-redirect@kubernetescrd"
-    #traefik.ingress.kubernetes.io/router.tls: "true"
-    #traefik.ingress.kubernetes.io/router.priority: "10"
-
-spec:
-  ingressClassName: traefik
-  tls:
-  - secretName: todo-backend-tls
-    hosts:
-    - *hostname
-  rules:
-  - host: *hostname
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: "todo-backend"
-            port:
-              number: 8080
+  listenPort: 8080
 
 persistence:
   enabled: true
+  size: 256M
   storageClass: "" #"local-path"
   accessMode: ReadWriteOnce
-  size: 1G
-  existingClaim: ""
 
-todoapp:
-  listenPort: "8080"
-  storage: "/data/todoapp.db"
-  resources:
-    requests:
-      cpu: "100m"
-      memory: "0.2Gi"
-    limits:
-      cpu: "200m"
-      memory: "0.5Gi"
+ingress:
+  enabled: true
+  className: traefik
+  host: todo-backend.todo.svc.cluster.local
+  serviceName: todo-backend
+  tls:
+  - secretName: todo-backend-tls
+    hosts:
+    - todo-backend.todo.svc.cluster.local
+  annotations:
+    kubernetes.io/ingress.className: traefik
+    cert-manager.io/cluster-issuer: local-ca
+    external-dns.alpha.kubernetes.io/hostname: todo-backend.todo.svc.cluster.local
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+
+image:
+  repository: foxmuldercp/go-todo-backend
+  tag: 5efdb11 #latest
+resources:
+  requests:
+    cpu: "100m"
+    memory: "64Mb"
+  limits:
+    cpu: "200m"
+    memory: "128Mb"

@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/part-of: {{ .Chart.Name }}
-    app.kubernetes.io/component: {{ .Release.Name }}-frontend
+    app.kubernetes.io/component: {{ include "frontend.fullname" . }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 data:

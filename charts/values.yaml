@@ -1,22 +1,76 @@
 backend:
   enabled: true
   service:
+    type: ClusterIP
+    name: todo-backend
     port: 8080
-  image:
-    repository: foxmuldercp/go-todo-backend
-    tag: "latest"
+    listenPort: 8080
+
   persistence:
     enabled: true
-  env:
-    STORAGE: /data/todo.db
-    LISTEN_PORT: "8080"
+    size: 256M
+    storageClass: "" #"local-path"
+    accessMode: ReadWriteOnce
+
+  ingress:
+    enabled: true
+    className: traefik
+    host: todo-backend.todo.svc.cluster.local
+    serviceName: todo-backend
+    tls:
+    - secretName: todo-backend-tls
+      hosts:
+      - todo-backend.todo.svc.cluster.local
+    annotations:
+      kubernetes.io/ingress.className: traefik
+      cert-manager.io/cluster-issuer: local-ca
+      external-dns.alpha.kubernetes.io/hostname: todo-backend.todo.svc.cluster.local
+      traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+
+  image:
+    repository: foxmuldercp/go-todo-backend
+    tag: 5efdb11 #latest
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "0.2G"
+    limits:
+      cpu: "200m"
+      memory: "0.5G"
 
 frontend:
-  enabled: true
+  service:
+    port: 80
+
+  backend:
+    host: todo-backend.todo.svc.cluster.local
+    port: 8080
+
+  ingress:
+    enabled: true
+    className: traefik
+    host: todo-frontend.todo.svc.cluster.local
+    serviceName: todo-frontend
+    tls:
+    - secretName: todo-frontend-tls
+      hosts:
+      - todo-frontend.todo.svc.cluster.local
+    annotations:
+      kubernetes.io/ingress.className: traefik
+      cert-manager.io/cluster-issuer: local-ca
+      external-dns.alpha.kubernetes.io/hostname: todo-frontend.todo.svc.cluster.local
+      traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+      #traefik.ingress.kubernetes.io/router.middlewares: "default-https-redirect@kubernetescrd"
+      #traefik.ingress.kubernetes.io/router.tls: "true"
+      #traefik.ingress.kubernetes.io/router.priority: "10"
+
   image:
     repository: foxmuldercp/go-todo-frontend
     tag: latest
-  service:
-    port: 80
-  env:
-    BACKEND_URL: "http://todo:8080"
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "0.2G"
+    limits:
+      cpu: "200m"
+      memory: "0.5G"

@@ -9,14 +9,14 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/part-of: {{ .Chart.Name }}
-    app.kubernetes.io/component: {{ .Release.Name }}-frontend
+    app.kubernetes.io/component: {{ include "frontend.fullname" . }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 data:
   default.conf: |
-    {{- $svcName := default (printf "%s" .Values.backend.service.host ) }}
+    {{- $svcName := default (printf "%s" .Values.backend.host ) }}
     {{- $svcNS := default .Release.Namespace }}
-    {{- $svcPort := int (default 8080 .Values.backend.service.port) }}
+    {{- $svcPort := int (default 8080 .Values.backend.port) }}
     {{- $svcFQDN := printf "%s:%d" $svcName $svcPort }}
     upstream backend {
       server {{ $svcFQDN }};

@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-backend
+  name: {{ include "backend.fullname" . }}
   labels:
     app: {{ .Release.Name }}
     app.kubernetes.io/app: {{ .Release.Name }}
@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     app.kubernetes.io/part-of: {{ .Chart.Name }}
-    app.kubernetes.io/component: {{ .Release.Name }}-backend
+    app.kubernetes.io/component: {{ include "backend.fullname" . }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   {{- with .Values.ingress.annotations }}
   annotations:
@@ -38,7 +38,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ .Values.ingress.serviceName | default "todo" }}
+                name: {{ .Values.ingress.serviceName | default .Values.service.name }}
                 port:
-                  number: {{ .Values.ingress.port | default 80 }}
+                  number: {{ .Values.ingress.port | default 8080 }}
 {{- end }}

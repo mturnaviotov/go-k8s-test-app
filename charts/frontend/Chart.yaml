@@ -1,6 +1,6 @@
 apiVersion: v2
-name: todo-frontend
+name: frontend
 description: Frontend for TodoApp (React + Tailwind)
 type: application
-version: 0.0.2
-appVersion: "0.0.2"
+version: 0.0.3
+appVersion: "0.0.3"

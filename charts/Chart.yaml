@@ -1,14 +1,14 @@
 apiVersion: v2
-name: todoapp
+name: Todo
 description: Umbrella chart for Todo App (backend + frontend)
 type: application
-version: 0.0.2
-appVersion: "0.0.2"
+version: 0.0.3
+appVersion: "0.0.3"
 
 dependencies:
-- name: todo-backend
-  version: 0.0.2
+- name: backend
+  version: 0.0.3
   repository: "file://backend"
-- name: todo-frontend
-  version: 0.0.2
+- name: frontend
+  version: 0.0.3
   repository: "file://frontend"
